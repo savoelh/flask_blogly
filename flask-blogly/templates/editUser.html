@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{user.first_name}} Edit</title>
+</head>
+<body>
+    <h1>Profile Settings</h1>
+    <form action="/{{user.id}}/submit_edit">
+        <label for="e_f_name">First Name:</label>
+        <input type="text" name="e_f_name" placeholder="{{user.first_name}}">
+        <br>
+        <label for="e_l_name">Last Name:</label>
+        <input type="text" name="e_l_name" placeholder="{{user.last_name}}">
+        <br>
+        <label for="e_img_url">Profile Image:</label>
+        <input type="text" name="e_img_url">
+        <br>
+        <Button>Save</Button>
+    </form>
+    <form action="/{{user.id}}">
+        <button>Cancel</button>
+    </form>
+</body>
+</html>
