@@ -1,15 +1,13 @@
-"""Blogly application."""
 
-from distutils.command.build_scripts import first_line_re
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, Users
+from models import db, connect_db, Users, Posts
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///users'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 app.config['SECRET_KEY'] = 'シーッ,それは秘密です'
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
@@ -27,7 +25,9 @@ def list_users():
 @app.route('/<int:user_id>')
 def show_user(user_id):
     user = Users.query.get_or_404(user_id)
-    return render_template('details.html', user=user)
+    my_posts = Posts.query.filter_by(users_id=user_id)
+    print(my_posts)
+    return render_template('details.html', user=user,  my_posts=my_posts)
 
 
 @app.route('/AddUser')
@@ -79,7 +79,43 @@ def submit_edit(user_id):
 
 @app.route('/<int:user_id>/delete_user')
 def delete_user(user_id):
-    death = Users.query.get(user_id)
-    db.session.delete(death)
+    user = Users.query.get(user_id)
+    db.session.delete(user)
     db.session.commit()
     return redirect('/')
+
+@app.route('/<int:user_id>/post', methods=['POST'])
+def make_post(user_id):
+    user = Users.query.get(user_id)
+    p_title = request.form['p_title']
+    p_content = request.form['p_content']
+    entry = Posts(title=p_title, content=p_content, users_id=user.id)
+    db.session.add(entry)
+    db.session.commit()
+    return redirect(f'/{user.id}')
+
+@app.route('/<int:post_id>/post_edit')
+def post_edit(post_id):
+    this_post = Posts.query.get(post_id)
+    return render_template('/post_edit.html', this_post=this_post)
+
+@app.route('/<int:post_id>/post_edit_submit')
+def post_edit_submit(post_id):
+    this_post = Posts.query.get(post_id)
+    e_p_title = request.args['e_p_title']
+    e_p_content = request.args['e_p_content']
+
+    this_post.title = e_p_title
+    this_post.content = e_p_content
+
+    db.session.add(this_post)
+    db.session.commit()
+
+    return redirect(f'/{this_post.users_id}')
+
+@app.route('/<int:post_id>/remove_post')
+def remove_post(post_id):
+    this_post = Posts.query.get(post_id)
+    db.session.delete(this_post)
+    db.session.commit()
+    return redirect(f'/{this_post.users_id}')
