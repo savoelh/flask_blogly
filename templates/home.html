@@ -1,21 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="base.css">
     <title>Home</title>
 </head>
+
 <body>
-    <h1>User list</h1>
-    <ul>
-        {% for user in users %}
-        <li><a href="/{{user.id}}">{{user.first_name}}</a></li>
-        {% endfor %}
-    </ul>
-    <h2>Add a new user</h2>
-    <form action="/AddUser">
-        <button>Add User</button>
-    </form>
+    <section class="container">
+        <h1 class="has-text-weight-bold is-size-2">User list</h1>
+        <ul>
+            {% for user in users %}
+            <li><a href="/{{user.id}}">{{user.first_name}}</a></li>
+            {% endfor %}
+        </ul>
+        <h2 class="has-text-weight-bold is-size-3">Add a new user</h2>
+        <form action="/AddUser">
+            <button>Add User</button>
+        </form>
+    </section>
+
+    <section class="container">
+        <h3 class="has-text-weight-bold is-size-4">Add a new tag for your users</h3>
+        <form action="">
+            <label for="tag">Tag Name:</label>
+            <input type="text" name="tag">
+            <button>Add</button>
+        </form>
+        <div>
+            <ul>
+            {% for tag in tag %}
+            <li><a href="">{{tag.name}}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+    </section>
 </body>
+
 </html>

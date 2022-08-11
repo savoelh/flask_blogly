@@ -4,19 +4,66 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{user.first_name}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <title>{{user.get_full_name}}</title>
 </head>
 <body> 
-    <h1>{{user.first_name}} Details</h1>
-    <ul>
-        <li>{{user.first_name}} {{user.last_name}}</li>
-        <img src="{{user.image_url}}" alt="">
-    </ul>
-    <form action="/{{user.id}}/edit_user">
-        <button>Edit</button>
-    </form>
-    <form action="/{{user.id}}/delete_user">
-        <button>Delete</button>
+    <h1 class="has-text-weight-bold is-size-2">{{user.get_full_name}} Details</h1>
+    
+    <br>
+    <div class="card">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-left">
+              <figure class="image is-100x100">
+                <img src="{{user.image_url}}" alt="Placeholder image">
+              </figure>
+            </div>
+            <div class="media-content">
+              <p class="title is-4">Account settings</p>
+              <form action="/{{user.id}}/edit_user">
+                <button class="button is-light is-info">Edit</button>
+            </form>
+            <form action="/{{user.id}}/delete_user">
+                <button class="button is-light is-danger">Delete</button>
+            </form>
+            </div>
+          </div>
+      
+          <div class="content">
+            <h3>All Posts by {{user.get_full_name}}</h3>
+                {% for post in my_posts %}
+                <h5 class="has-text-weight-bold is-size-4">{{post.title}}</h5>
+                <p>{{post.content}}</p>
+                <a href="/{{post.id}}/post_edit">Edit my post</a>
+            
+            <a href="#">#tags</a> <a href="#">#more tags</a>
+            <br>
+            <p>{{post.created_at}}</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <h2 class="has-text-weight-bold is-size-3">Add a Post</h2>
+    <form method="POST" action="/{{user.id}}/post">
+        <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Title</label>
+            </div>
+            <div class="field-body">
+              <div class="">
+                <div class="control">
+                  <input name="p_title" class="input" type="text">
+                </div>
+              </div>
+            </div>
+          </div>
+        <br>
+        <label for="p_content">Content:</label>
+        <textarea name="p_content" cols="40" rows="5"></textarea>
+        <br>
+        <button>Submit</button>
     </form>
 </body>
 </html>
+
