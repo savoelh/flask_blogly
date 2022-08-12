@@ -1,43 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <title>{{user.get_full_name}}</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <title>{{user.get_full_name}}</title>
 </head>
-<body> 
-    <h1>{{user.get_full_name}} Details</h1>
-    <img src="{{user.image_url}}" alt="">
-    <form action="/{{user.id}}/edit_user">
-        <button>Edit</button>
-    </form>
-    <form action="/{{user.id}}/delete_user">
-        <button>Delete</button>
-    </form>
-    <br>
-    <h2>Make a Post</h2>
-    <form method="POST" action="/{{user.id}}/post">
-        <label for="p_title">Title:</label>
-        <input type="text", name="p_title">
-        <br>
-        <label for="p_content">Content:</label>
-        <textarea name="p_content" cols="40" rows="5"></textarea>
-        <br>
-        <button>Submit</button>
-    </form>
-    <br>
-    <h3>All Posts by {{user.get_full_name}}</h3>
-    <ul>
+
+<body>
+  <h1 class="has-text-weight-bold is-size-2">{{user.get_full_name}} Details</h1>
+
+  <br>
+  <div class="card">
+    <div class="card-content">
+      <div class="media">
+        <div class="media-left">
+          <figure class="image is-100x100">
+            <img src="{{user.image_url}}" alt="Placeholder image">
+          </figure>
+        </div>
+        <div class="media-content">
+          <p class="title is-4">Account settings</p>
+          <form action="/{{user.id}}/edit_user">
+            <button class="button is-light is-info">Edit</button>
+          </form>
+          <form action="/{{user.id}}/delete_user">
+            <button class="button is-light is-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="content">
+        <h3>All Posts by {{user.get_full_name}}</h3>
         {% for post in my_posts %}
-        <li><h5>{{post.title}}</h5></li>
+        <h5 class="has-text-weight-bold is-size-4">{{post.title}}</h5>
         <p>{{post.content}}</p>
-        <p>{{user.get_full_name}}</p>
         <a href="/{{post.id}}/post_edit">Edit my post</a>
+        {% if post.tags %}
+        <p>
+          <b>Tags:</b>
+          {% for tag in post.tags %}
+          <a href="/tag:{{ tag.id }}"><i>{{ tag.name }}</i></a>
+          {% endfor %}
+        </p>
+        {% endif %}
+        <br>
+        <p>{{post.created_at}}</p>
         {% endfor %}
-    </ul>
-
+      </div>
+    </div>
+  </div>
+  <h2 class=" has-text-weight-bold is-size-3 ">Add a Post</h2>
+  <form method="POST" action="/{{user.id}}/post">
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Title</label>
+      </div>
+      <div class="field-body">
+        <div class="">
+          <div class="control">
+            <input name="p_title" class="input" type="text">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Content:</label>
+      </div>
+      <div class="field-body">
+        <div class="">
+          <div class="control">
+            <textarea name="p_content" class="textarea"></textarea>
+            <div class="field">
+              <label class="label">Pick a tag:</label>
+              <div class="control">
+                <div class="dropdown is-multiple">
+                  <select name="select_tag">
+                    {% for tag in tag %}
+                    <option>{{tag.name}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <br>
+            <button>Submit</button>
+  </form>
 </body>
-</html>
 
+</html>

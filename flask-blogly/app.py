@@ -1,7 +1,7 @@
 
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, Users, Posts
+from models import db, connect_db, Users, Posts, Tag, PostTag
 
 app = Flask(__name__)
 
@@ -19,15 +19,16 @@ db.create_all()
 @app.route('/')
 def list_users():
     users = Users.query.all()
-    return render_template('home.html', users=users)
+    tag = Tag.query.all()
+    return render_template('home.html', users=users, tag=tag)
 
 
 @app.route('/<int:user_id>')
 def show_user(user_id):
     user = Users.query.get_or_404(user_id)
+    tag = Tag.query.all()
     my_posts = Posts.query.filter_by(users_id=user_id)
-    print(my_posts)
-    return render_template('details.html', user=user,  my_posts=my_posts)
+    return render_template('details.html', user=user,  my_posts=my_posts, tag=tag)
 
 
 @app.route('/AddUser')
@@ -87,9 +88,15 @@ def delete_user(user_id):
 @app.route('/<int:user_id>/post', methods=['POST'])
 def make_post(user_id):
     user = Users.query.get(user_id)
+
+    select_name = request.form.get('select_tag')
+    tags = db.session.query(Tag).filter(Tag.name==select_name).first()
+    print(tags)
     p_title = request.form['p_title']
     p_content = request.form['p_content']
-    entry = Posts(title=p_title, content=p_content, users_id=user.id)
+
+    
+    entry = Posts(title=p_title, content=p_content, users_id=user.id, tags=[tags])
     db.session.add(entry)
     db.session.commit()
     return redirect(f'/{user.id}')
@@ -119,3 +126,31 @@ def remove_post(post_id):
     db.session.delete(this_post)
     db.session.commit()
     return redirect(f'/{this_post.users_id}')
+
+@app.route('/tag:<int:tag_id>')
+def tag_page(tag_id):
+    tag = Tag.query.get(tag_id)
+    return render_template('edit_tag.html', tag=tag)
+
+@app.route('/tag:<int:tag_id>/submit')
+def edit_tag(tag_id):
+    tag = Tag.query.get(tag_id)
+    e_t_name = request.args['e_t_name']
+    tag.name = e_t_name
+
+    db.session.add(tag)
+    db.session.commit()
+
+    return redirect('/')
+
+@app.route('/tag_add')
+def tag_add():
+    new_tag = request.args['tag']
+    entry = Tag(name=new_tag)
+
+    db.session.add(entry)
+    db.session.commit()
+
+    return redirect('/')
+
+    

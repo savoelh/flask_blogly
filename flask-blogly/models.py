@@ -1,4 +1,5 @@
 """Models for Blogly."""
+from enum import unique
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 db = SQLAlchemy()
@@ -31,3 +32,21 @@ class Posts(db.Model):
     users_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     users = db.relationship('Users', backref='posts')
+    
+
+class Tag(db.Model):
+
+    __tablename__ = 'tags'
+
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    name = db.Column(db.String, unique=True)
+
+    posts = db.relationship('Posts', secondary='posttags', backref='tags')
+
+class PostTag(db.Model):
+
+    __tablename__ = 'posttags'
+
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'), nullable=False)
